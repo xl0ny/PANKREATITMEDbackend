@@ -41,6 +41,9 @@ func (a *Application) RunApp() {
 	//a.Handler.RegisterStatic(a.Router)
 
 	a.Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	a.Router.GET("/openapi.json", func(c *gin.Context) {
+		c.File("./docs/swagger.json")
+	})
 
 	serverAddress := fmt.Sprintf("%s:%d", a.Config.ServiceHost, a.Config.ServicePort)
 	fmt.Println(serverAddress)

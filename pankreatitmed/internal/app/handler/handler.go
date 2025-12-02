@@ -54,7 +54,7 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 				auth.DELETE("/:id", h.PankreatitOrderDelete)
 
 				auth.DELETE("/items", h.DeletePankreatitOrderItem)
-				moder.PUT("/items", h.UpdatePankreatitOrderItem)
+				auth.PUT("/items", h.UpdatePankreatitOrderItem)
 			}
 		}
 
