@@ -44,6 +44,7 @@ services:
     volumes: # куда физически переадресовать* память(в какие разделы) из виртуальной(в докере) на вашу машину. по сути это работает как хард линк на файл/папку
       - data1-1:/data1
       - data1-2:/data2
+      - ./minio/certs:/root/.minio/certs
 
   minio2: # аналогично ставим 2-4 ноды
     <<: *minio-common
@@ -51,6 +52,7 @@ services:
     volumes:
       - data2-1:/data1
       - data2-2:/data2
+      - ./minio/certs:/root/.minio/certs
 
   minio3:
     <<: *minio-common
@@ -58,6 +60,7 @@ services:
     volumes:
       - data3-1:/data1
       - data3-2:/data2
+      - ./minio/certs:/root/.minio/certs
 
   minio4:
     <<: *minio-common
@@ -65,6 +68,7 @@ services:
     volumes:
       - data4-1:/data1
       - data4-2:/data2
+      - ./minio/certs:/root/.minio/certs
 
   nginx: # наш еще один сервис в подсети docker будет nginx
     image: nginx:1.19.2-alpine # исходники сервиса взять отсюда
@@ -73,6 +77,7 @@ services:
       # куда физически переадресовать* память(в какие разделы) из виртуальной(в докере) на вашу машину. по сути это работает как хард линк на файл/папку.
       # доступ даем на ro (read only)
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
     ports:
       - "9000:9000" # форвардим порт 9000 из нашей локальной сети(localhost) (forward port) на исхоодный(внутри подсети docker)(source port)
       - "9001:9001" # левый порт - порт вашей локальной сети компьютера, таргетный. порт справа - соурс порт - порт внутри подсети докера.

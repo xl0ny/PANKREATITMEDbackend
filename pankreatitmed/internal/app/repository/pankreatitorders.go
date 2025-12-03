@@ -92,9 +92,10 @@ func (r *Repository) GetPankreatitOrderWithItems(orderID uint) (ds.PankreatitOrd
 		return ds.PankreatitOrder{}, nil, err
 	}
 	var items []ds.PankreatitOrderItem
-	if err := r.db.Where("pankreatit_order_id = ?", orderID).Order("id").Find(&items).Error; err != nil {
+	if err := r.db.Preload("Criterion").Where("pankreatit_order_id = ?", orderID).Order("id").Find(&items).Error; err != nil {
 		return ds.PankreatitOrder{}, nil, err
 	}
+	fmt.Println(items)
 	return o, items, nil
 }
 
