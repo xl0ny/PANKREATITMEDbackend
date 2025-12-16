@@ -87,7 +87,7 @@ func (s *pankreatitOrdersService) CancelOrEnd(ID, moderator uint, status string)
 	if err != nil {
 		return err
 	}
-	if CheckReadyToCanselOrEnd(criteria) {
+	if status == "completed" && CheckReadyToEnd(criteria) {
 		rans, rsk, err := s.computeRanson(criteria)
 		if err != nil {
 			return err
@@ -98,13 +98,17 @@ func (s *pankreatitOrdersService) CancelOrEnd(ID, moderator uint, status string)
 		if err := s.repo.EndOrCancelPankreatitOrder(ID, moderator, status); err != nil {
 			return err
 		}
+	} else if status == "rejected" {
+		if err := s.repo.EndOrCancelPankreatitOrder(ID, moderator, status); err != nil {
+			return err
+		}
 	} else {
 		return errors.New("Not all value fields are complete")
 	}
 	return nil
 }
 
-func CheckReadyToCanselOrEnd(items []ds.PankreatitOrderItem) bool {
+func CheckReadyToEnd(items []ds.PankreatitOrderItem) bool {
 	for _, item := range items {
 		if item.ValueNum == nil {
 			return false

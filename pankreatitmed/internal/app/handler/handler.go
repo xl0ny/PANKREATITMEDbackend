@@ -72,5 +72,7 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 				moder.POST("auth/logout/:token", h.MedUserLogOut)
 			}
 		}
+
+		api.PUT("/setranson", h.PankreatitOrderSetRanson)
 	}
 }

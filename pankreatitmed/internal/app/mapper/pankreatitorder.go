@@ -2,6 +2,7 @@ package mapper
 
 import (
 	"pankreatitmed/internal/app/ds"
+	"pankreatitmed/internal/app/dto/request"
 	"pankreatitmed/internal/app/dto/response"
 )
 
@@ -16,6 +17,7 @@ func PankreatitOrderToSendPankreatitOrders(mo ds.PankreatitOrder) response.SendP
 	return response.SendPankreatitOrders{
 		ID:            mo.ID,
 		Status:        mo.Status,
+		CreatorID:     mo.CreatorID,
 		FormedAt:      mo.FormedAt,
 		FinishedAt:    mo.FinishedAt,
 		RansonScore:   mo.RansonScore,
@@ -42,5 +44,14 @@ func PankreatitOrderToSendPankreatitOrderWithItems(mo ds.PankreatitOrder, itms [
 		RansonScore:   mo.RansonScore,
 		MortalityRisk: mo.MortalityRisk,
 		Items:         PankreatitOrderItemsToSendPankreatitOrderItems(itms),
+	}
+}
+
+func PankreatitOrderSetRansonToUpdatePankreatitOrder(order request.PankreatitOrderSetRanson) request.UpdatePankreatitOrder {
+	return request.UpdatePankreatitOrder{
+		Status:        order.Status,
+		FinishedAt:    order.FinishedAt,
+		RansonScore:   order.RansonScore,
+		MortalityRisk: order.MortalityRisk,
 	}
 }

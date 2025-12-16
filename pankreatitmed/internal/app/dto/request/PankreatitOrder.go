@@ -15,9 +15,10 @@ type GetPankreatitOrder struct {
 }
 
 type UpdatePankreatitOrder struct {
-	Status        string `json:"status"`
-	RansonScore   int    `json:"ranson_score"`
-	MortalityRisk string `json:"mortality_risk"`
+	Status        string     `json:"status"`
+	FinishedAt    *time.Time `json:"finished_at" time_format:"2006-01-02T15:04:05"`
+	RansonScore   int        `json:"ranson_score"`
+	MortalityRisk string     `json:"mortality_risk"`
 }
 
 type FormPankreatitOrder struct {
@@ -38,4 +39,13 @@ type GetModerator struct {
 
 type DeletePankreatitOrder struct {
 	ID uint `json:"id" binding:"required"`
+}
+
+type PankreatitOrderSetRanson struct {
+	ID            uint       `json:"id" binding:"required"`
+	Status        string     `json:"status"`
+	FinishedAt    *time.Time `json:"finished_at" time_format:"2006-01-02T15:04:05"`
+	RansonScore   int        `json:"ranson_score" binding:"omitempty"`
+	MortalityRisk string     `json:"mortality_risk" binding:"omitempty"`
+	Key           string     `json:"key" binding:"required"`
 }

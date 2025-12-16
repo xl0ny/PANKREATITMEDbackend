@@ -55,7 +55,6 @@ func (r *Repository) GetOrCreateDraftPankreatitOrder(creatorID uint) (*ds.Pankre
 
 func (r *Repository) GetPankreatitOrders(userID uint, status *string, start, end *time.Time) ([]ds.PankreatitOrder, error) {
 	var orders []ds.PankreatitOrder
-
 	usr, err := r.GetMedUserByID(userID)
 	if err != nil {
 		return nil, err
@@ -71,13 +70,21 @@ func (r *Repository) GetPankreatitOrders(userID uint, status *string, start, end
 		q = q.Where("status = ?", *status)
 	}
 
+	var endInclusive *time.Time
+
+	if end != nil {
+		tmp := end.AddDate(0, 0, 1)
+		endInclusive = &tmp
+	} else {
+		endInclusive = nil
+	}
 	switch {
 	case start != nil && end != nil:
-		q = q.Where("created_at >= ? AND created_at < ?", *start, *end)
+		q = q.Where("created_at >= ? AND created_at < ?", *start, endInclusive)
 	case start != nil:
 		q = q.Where("created_at >= ?", *start)
 	case end != nil:
-		q = q.Where("created_at < ?", *end)
+		q = q.Where("created_at < ?", endInclusive)
 	}
 
 	if err := q.Order("created_at ASC").Find(&orders).Error; err != nil {

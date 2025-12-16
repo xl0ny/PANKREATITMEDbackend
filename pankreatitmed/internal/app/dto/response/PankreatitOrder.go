@@ -12,6 +12,7 @@ type SendCartPankreatitOrder struct {
 type SendPankreatitOrders struct {
 	ID            uint       `json:"id"`
 	Status        string     `json:"status"`
+	CreatorID     uint       `json:"creator_id"`
 	FormedAt      *time.Time `json:"formed_at"`
 	FinishedAt    *time.Time `json:"finished_at"`
 	RansonScore   *int       `json:"ranson_score"`

@@ -1,9 +1,15 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"pankreatitmed/internal/app/authctx"
 	"pankreatitmed/internal/app/dto/request"
+	"pankreatitmed/internal/app/mapper"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -147,6 +153,20 @@ func (h *Handler) PankreatitOrderUpdate(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+func (h *Handler) PankreatitOrderSetRanson(c *gin.Context) {
+	var ranson request.PankreatitOrderSetRanson
+	if err := c.ShouldBindJSON(&ranson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if ranson.Key != "A9F3C47E2B8D1C6A" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "problem with access key"})
+		return
+	}
+	order := mapper.PankreatitOrderSetRansonToUpdatePankreatitOrder(ranson)
+	h.svcs.PankreatitOrders.Update(ranson.ID, &order)
+}
+
 // PankreatitOrderForm godoc
 // @Summary      Сформировать заявку (создатель)
 // @Description  Проверяет владельца; валидирует обязательные поля; устанавливает дату формирования
@@ -218,7 +238,26 @@ func (h *Handler) PankreatitOrderComplete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := h.svcs.PankreatitOrders.CancelOrEnd(idstatus.ID, usr.ID, idstatus.Status); err != nil {
+	if idstatus.Status == "completed" {
+		data, _ := json.Marshal(map[string]int{"id": int(idstatus.ID)})
+
+		client := &http.Client{Timeout: 5 * time.Second}
+
+		req, _ := http.NewRequest(
+			http.MethodPost,
+			"http://localhost:8000/",
+			bytes.NewBuffer(data),
+		)
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, _ := client.Do(req)
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+
+		fmt.Println(resp.StatusCode)
+		fmt.Println(string(body))
+	} else if err := h.svcs.PankreatitOrders.CancelOrEnd(idstatus.ID, usr.ID, idstatus.Status); err != nil {
 		if err.Error() == "MedOrderIsNotFormed" {
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 			return
