@@ -165,6 +165,7 @@ func (h *Handler) PankreatitOrderSetRanson(c *gin.Context) {
 	}
 	order := mapper.PankreatitOrderSetRansonToUpdatePankreatitOrder(ranson)
 	h.svcs.PankreatitOrders.Update(ranson.ID, &order)
+	c.Status(http.StatusOK)
 }
 
 // PankreatitOrderForm godoc
